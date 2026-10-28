@@ -16,6 +16,10 @@ export class AuthService {
   private readonly usersKey = 'renthub_users';
   private readonly sessionKey = 'renthub_current_user';
 
+  constructor() {
+    this.seedDemoUsers();
+  }
+
   register(name: string, email: string, password: string): string | null {
     const users = this.getUsers();
     const normalizedEmail = email.trim().toLowerCase();
@@ -80,6 +84,38 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.getCurrentUser() !== null;
+  }
+
+  private seedDemoUsers(): void {
+    const users = this.getUsers();
+
+    const demoUsers: StoredUser[] = [
+      {
+        name: 'Anav',
+        email: 'anav@lamba.com',
+        password: 'anav1738',
+      },
+      {
+        name: 'Navya',
+        email: 'navya@lamba.com',
+        password: 'navya1999',
+      },
+      {
+        name: 'Sandy',
+        email: 'sandy@gmail.com',
+        password: 'sandy1972',
+      },
+    ];
+
+    for (const demoUser of demoUsers) {
+      const exists = users.some((user) => user.email === demoUser.email);
+
+      if (!exists) {
+        users.push(demoUser);
+      }
+    }
+
+    localStorage.setItem(this.usersKey, JSON.stringify(users));
   }
 
   private getUsers(): StoredUser[] {
