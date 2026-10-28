@@ -5,7 +5,7 @@ RentHub is a responsive apartment rental application built with Angular. It allo
 ## Project Links
 
 - **GitHub Repository:** https://github.com/anavlamba-hue/renthub
-- **Live Application:** To be added after deployment.
+- **Live Application:** https://renthub-alpha-two.vercel.app/
 
 ## Features
 
@@ -31,6 +31,7 @@ RentHub is a responsive apartment rental application built with Angular. It allo
 - Sort and paginate listing results.
 - Add and manage favourite listings.
 - Submit enquiries and interact with listing information.
+- Favourites do not sync across browsers or devices because the application does not use a shared backend database.
 
 ### User Experience
 
@@ -57,7 +58,7 @@ The following demo accounts are seeded automatically in the browser's local stor
 | Navya | `navya@lamba.com` | `navya1999` |
 | Sandy | `sandy@gmail.com` | `sandy1972` |
 
-**Note:** This is a coursework demonstration implementation. Authentication data is stored in browser local storage rather than a shared backend. These credentials are intended only for evaluating this application and must not be reused for real accounts.
+**Note:** This is a coursework demonstration implementation. Authentication data is stored in browser local storage rather than a shared backend.
 
 ## Run the Project Locally
 
