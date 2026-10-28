@@ -1,18 +1,23 @@
 import { Injectable } from '@angular/core';
+import { AuthService } from './auth.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class FavouritesService {
-  private readonly storageKey = 'renthub_favourites';
+  constructor(private authService: AuthService) {}
+
+  private getStorageKey(): string | null {
+    const user = this.authService.getCurrentUser();
+
+    return user ? `renthub_favourites_${user.email.toLowerCase()}` : null;
+  }
 
   getFavourites(): number[] {
-    try {
-      const saved = localStorage.getItem(this.storageKey);
+    const key = this.getStorageKey();
+    if (!key) return [];
 
-      if (!saved) {
-        return [];
-      }
+    try {
+      const saved = localStorage.getItem(key);
+      if (!saved) return [];
 
       const parsed: unknown = JSON.parse(saved);
 
@@ -31,12 +36,15 @@ export class FavouritesService {
   }
 
   toggleFavourite(id: number): void {
+    const key = this.getStorageKey();
+    if (!key) return;
+
     const favourites = this.getFavourites();
 
     const updated = favourites.includes(id)
       ? favourites.filter((item) => item !== id)
       : [...favourites, id];
 
-    localStorage.setItem(this.storageKey, JSON.stringify(updated));
+    localStorage.setItem(key, JSON.stringify(updated));
   }
 }
