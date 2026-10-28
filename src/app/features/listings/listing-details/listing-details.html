@@ -1,0 +1,225 @@
+@if (property; as home) {
+  <main class="details-page">
+    <a class="back-link" routerLink="/">← Back to all listings</a>
+
+    <div class="page-heading">
+      <div>
+        <span class="eyebrow">{{ home.tag }} PROPERTY</span>
+        <h1>{{ home.title }}</h1>
+        <p class="location">⌖ {{ home.city }}</p>
+      </div>
+
+      <div class="price-block">
+        <strong>{{ home.price | currency: 'INR' : 'symbol' : '1.0-0' }}</strong>
+        <span>per month</span>
+      </div>
+
+      <button
+        type="button"
+        class="details-favourite"
+        [class.favourited]="isFavourite(home.id)"
+        [attr.aria-pressed]="isFavourite(home.id)"
+        [attr.aria-label]="isFavourite(home.id) ? 'Remove from favourites' : 'Add to favourites'"
+        (click)="toggleFavourite(home.id)"
+      >
+        {{ isFavourite(home.id) ? '♥ Saved' : '♡ Save property' }}
+      </button>
+    </div>
+
+    <section class="gallery">
+      <div class="main-photo">
+        <img [src]="imageUrl(home.image)" [alt]="home.title" />
+        <span class="photo-badge">✦ {{ home.tag }}</span>
+      </div>
+
+      <div class="gallery-note">
+        <span class="gallery-icon">⌂</span>
+        <h3>Your next chapter starts here.</h3>
+        <p>Explore the details and imagine making this space your own.</p>
+
+        <div class="gallery-stats">
+          <div>
+            <strong>{{ home.beds }}</strong>
+            <span>Bedrooms</span>
+          </div>
+          <div>
+            <strong>{{ home.baths }}</strong>
+            <span>Bathrooms</span>
+          </div>
+          <div>
+            <strong>{{ home.area }}</strong>
+            <span>Sq. ft.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="details-grid">
+      <div class="main-content">
+        <section class="content-section">
+          <span class="eyebrow">ABOUT THIS SPACE</span>
+          <h2>A place to feel at home.</h2>
+          <p class="description">{{ home.description }}</p>
+        </section>
+
+        <section class="content-section">
+          <span class="eyebrow">PROPERTY DETAILS</span>
+          <h2>The essentials</h2>
+
+          <div class="spec-grid">
+            <div class="spec">
+              <span>Bedrooms</span>
+              <strong>{{ home.beds }}</strong>
+            </div>
+            <div class="spec">
+              <span>Bathrooms</span>
+              <strong>{{ home.baths }}</strong>
+            </div>
+            <div class="spec">
+              <span>Living area</span>
+              <strong>{{ home.area }} sq ft</strong>
+            </div>
+            <div class="spec">
+              <span>Furnishing</span>
+              <strong>{{ home.furnished }}</strong>
+            </div>
+            <div class="spec">
+              <span>Lease</span>
+              <strong>{{ home.lease }}</strong>
+            </div>
+            <div class="spec">
+              <span>Location</span>
+              <strong>{{ home.city }}</strong>
+            </div>
+            <div class="spec">
+              <span>Utilities</span>
+              <strong>
+                {{ home.utilitiesIncluded ? 'Included in rent' : 'Not included in rent' }}
+              </strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section">
+          <span class="eyebrow">WHAT'S INCLUDED</span>
+          <h2>Amenities</h2>
+
+          <div class="amenities">
+            @for (amenity of home.amenities; track amenity) {
+              <span class="amenity">
+                <span class="amenity-check">✓</span>
+                {{ amenity }}
+              </span>
+            }
+          </div>
+        </section>
+
+        <section class="content-section comments-section">
+          <span class="eyebrow">LET'S TALK</span>
+          <h2>Questions & comments</h2>
+          <p class="muted">Have a question about this property? Leave a comment below.</p>
+
+          <form (submit)="$event.preventDefault(); addComment()">
+            <label for="comment">Your comment</label>
+            <textarea
+              id="comment"
+              name="comment"
+              [value]="commentText"
+              (input)="commentText = $any($event.target).value"
+              placeholder="Ask a question or share your thoughts..."
+              minlength="2"
+              maxlength="500"
+              required
+            ></textarea>
+
+            <div class="comment-footer">
+              <span>{{ commentText.length }}/500 characters</span>
+              <button type="submit" [disabled]="commentText.trim().length < 2">
+                Post comment →
+              </button>
+            </div>
+          </form>
+
+          @for (comment of comments; track $index) {
+            <article class="comment">
+              <div class="avatar">{{ comment.name.charAt(0) }}</div>
+
+              <div class="comment-content">
+                <strong>{{ comment.name }}</strong>
+                <p>{{ comment.text }}</p>
+
+                @for (reply of comment.replies; track $index) {
+                  <div class="reply">
+                    <strong>{{ reply.name }}</strong>
+                    <p>{{ reply.text }}</p>
+                  </div>
+                }
+
+                <form (submit)="$event.preventDefault(); addReply($index)">
+                  <textarea
+                    [value]="replyText[$index] ?? ''"
+                    (input)="replyText[$index] = $any($event.target).value"
+                    [name]="'reply-' + $index"
+                    placeholder="Write a reply..."
+                    minlength="2"
+                    maxlength="500"
+                    required
+                  ></textarea>
+
+                  <button type="submit" [disabled]="(replyText[$index] ?? '').trim().length < 2">
+                    Reply
+                  </button>
+                </form>
+              </div>
+            </article>
+          } @empty {
+            <p class="muted empty-comments">No comments yet. Start the conversation!</p>
+          }
+        </section>
+      </div>
+
+      <aside class="contact-card">
+        <span class="eyebrow">INTERESTED?</span>
+        <h2>Could this be your next home?</h2>
+        <p>Send an enquiry to register your interest in this property.</p>
+
+        <div class="contact-price">
+          <strong>{{ home.price | currency: 'INR' : 'symbol' : '1.0-0' }}</strong>
+          <span>/ month</span>
+        </div>
+
+        @if (enquirySubmitted) {
+          <div class="enquiry-success" role="status" aria-live="polite">
+            <span class="success-icon">✓</span>
+            <div>
+              <strong>Interest registered!</strong>
+              <p>Your enquiry for {{ home.title }} has been saved in this browser.</p>
+            </div>
+          </div>
+        } @else {
+          <button type="button" class="contact-button" (click)="enquire()">
+            {{ authService.isLoggedIn() ? 'Send an enquiry ↗' : 'Log in to enquire ↗' }}
+          </button>
+        }
+
+        <div class="contact-divider"></div>
+
+        <div class="contact-note">
+          <span>✓</span>
+          <p>Save your favourite properties when you sign in.</p>
+        </div>
+        <div class="contact-note">
+          <span>✓</span>
+          <p>Ask questions and keep track of your interests.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+} @else {
+  <main class="not-found">
+    <span class="eyebrow">PROPERTY NOT FOUND</span>
+    <h1>Looks like this space has moved.</h1>
+    <p>Let's find another place you might love.</p>
+    <a class="contact-button" routerLink="/">Explore listings</a>
+  </main>
+}

@@ -1,0 +1,50 @@
+<section class="auth-page">
+  <div class="auth-card">
+    <a class="auth-brand" routerLink="/">rent<span>hub</span></a>
+
+    <span class="eyebrow">WELCOME BACK</span>
+    <h1>Good to see you again.</h1>
+    <p class="subtitle">Log in to continue your rental journey.</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+      <label for="email">Email address</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+      />
+
+      @if (loginForm.controls.email.touched && loginForm.controls.email.invalid) {
+        <small class="error">Enter a valid email address.</small>
+      }
+
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="At least 8 characters"
+        autocomplete="current-password"
+      />
+
+      @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+        <small class="error">Password must be at least 8 characters.</small>
+      }
+
+      @if (errorMessage) {
+        <small class="error">{{ errorMessage }}</small>
+      }
+
+      <button type="submit" class="submit-button">Log in</button>
+    </form>
+
+    <p class="switch-auth">
+      New to RentHub?
+      <a routerLink="/register">Create an account</a>
+    </p>
+
+    <a class="back-home" routerLink="/">← Back to exploring</a>
+  </div>
+</section>

@@ -1,0 +1,510 @@
+<main class="create-page">
+  <a class="back-link" routerLink="/">← Back to Explore</a>
+
+  <header class="page-header">
+    <span class="eyebrow">SHARE YOUR SPACE</span>
+    <h1>Create a <em>new post.</em></h1>
+    <p>Tell prospective tenants about your property and how to reach you.</p>
+  </header>
+
+  @if (!previewMode) {
+    <form #listingForm="ngForm" (ngSubmit)="submitListing()" novalidate>
+      <section class="form-section">
+        <h2>Choose your Apartment/Building</h2>
+
+        <div class="field-grid">
+          <div>
+            <label for="buildingType">Apartment/building type *</label>
+            <select
+              id="buildingType"
+              name="buildingType"
+              [(ngModel)]="listing.buildingType"
+              required
+              #buildingTypeField="ngModel"
+            >
+              <option value="">Select an option</option>
+              @for (type of buildingTypes; track type) {
+                <option [value]="type">{{ type }}</option>
+              }
+            </select>
+            @if (buildingTypeField.invalid && (buildingTypeField.touched || submitted)) {
+              <small class="error">Please select a property type.</small>
+            }
+          </div>
+
+          <div>
+            <label for="buildingName">Name of your apartment/building *</label>
+            <input
+              id="buildingName"
+              name="buildingName"
+              [(ngModel)]="listing.buildingName"
+              required
+              minlength="2"
+              maxlength="100"
+              #buildingNameField="ngModel"
+              placeholder="Enter the building name"
+            />
+            @if (buildingNameField.invalid && (buildingNameField.touched || submitted)) {
+              <small class="error">Enter a building name (at least 2 characters).</small>
+            }
+          </div>
+        </div>
+
+        <h2>Is this a shared property? *</h2>
+        <div class="choice-group">
+          <label>
+            <input
+              type="radio"
+              name="isShared"
+              [(ngModel)]="listing.isShared"
+              value="Yes"
+              required
+            />
+            Yes
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="isShared"
+              [(ngModel)]="listing.isShared"
+              value="No"
+              required
+            />
+            No
+          </label>
+        </div>
+        @if (!listing.isShared && submitted) {
+          <small class="error">Please select Yes or No.</small>
+        }
+      </section>
+
+      <section class="form-section">
+        <h2>Contact details</h2>
+
+        <div class="field-grid">
+          <div>
+            <label for="contactName">Contact name *</label>
+            <input
+              id="contactName"
+              name="contactName"
+              [(ngModel)]="listing.contactName"
+              required
+              minlength="2"
+              #contactNameField="ngModel"
+              placeholder="Your full name"
+            />
+            @if (contactNameField.invalid && (contactNameField.touched || submitted)) {
+              <small class="error">Enter your name.</small>
+            }
+          </div>
+
+          <div>
+            <label for="contactEmail">Email *</label>
+            <input
+              id="contactEmail"
+              name="contactEmail"
+              type="email"
+              [(ngModel)]="listing.contactEmail"
+              required
+              email
+              #contactEmailField="ngModel"
+              placeholder="you@example.com"
+            />
+            @if (contactEmailField.invalid && (contactEmailField.touched || submitted)) {
+              <small class="error">Enter a valid email address.</small>
+            }
+          </div>
+
+          <div>
+            <label for="contactPhone">Phone number *</label>
+            <input
+              id="contactPhone"
+              name="contactPhone"
+              type="tel"
+              [(ngModel)]="listing.contactPhone"
+              required
+              pattern="[0-9+() -]{7,20}"
+              #contactPhoneField="ngModel"
+              placeholder="Your contact number"
+            />
+            @if (contactPhoneField.invalid && (contactPhoneField.touched || submitted)) {
+              <small class="error">Enter a valid phone number.</small>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Property location</h2>
+
+        <label for="streetAddress">Street address *</label>
+        <input
+          id="streetAddress"
+          name="streetAddress"
+          [(ngModel)]="listing.streetAddress"
+          required
+          minlength="5"
+          maxlength="200"
+          #addressField="ngModel"
+          placeholder="Enter street address"
+        />
+        @if (addressField.invalid && (addressField.touched || submitted)) {
+          <small class="error">Enter a valid street address.</small>
+        }
+      </section>
+
+      <section class="form-section">
+        <label for="city">City *</label>
+        <input
+          id="city"
+          name="city"
+          [(ngModel)]="listing.city"
+          required
+          minlength="2"
+          #cityField="ngModel"
+          placeholder="Enter city"
+        />
+        @if (cityField.invalid && (cityField.touched || submitted)) {
+          <small class="error">Please enter a valid city.</small>
+        }
+      </section>
+
+      <section class="form-section">
+        <h2>Property details</h2>
+
+        <div class="field-grid">
+          <div>
+            <label for="area">Square feet *</label>
+            <input
+              id="area"
+              name="area"
+              type="number"
+              [(ngModel)]="listing.area"
+              required
+              min="1"
+              max="100000"
+              #areaField="ngModel"
+              placeholder="Area in square feet"
+            />
+            @if (areaField.invalid && (areaField.touched || submitted)) {
+              <small class="error">Enter an area greater than zero.</small>
+            }
+          </div>
+
+          <div class="form-grid">
+            <label class="field">
+              <span>Bedrooms *</span>
+              <input
+                type="number"
+                name="bedrooms"
+                [(ngModel)]="listing.bedrooms"
+                min="0"
+                max="20"
+                required
+              />
+            </label>
+
+            <label class="field">
+              <span>Bathrooms *</span>
+              <input
+                type="number"
+                name="bathrooms"
+                [(ngModel)]="listing.bathrooms"
+                min="0"
+                max="20"
+                required
+              />
+            </label>
+          </div>
+
+          <div>
+            <label>Stay / Lease type *</label>
+            <div class="choice-group">
+              @for (lease of ['Long term (6+ months)', 'Short term', 'Both']; track lease) {
+                <label>
+                  <input
+                    type="radio"
+                    name="lease"
+                    [(ngModel)]="listing.lease"
+                    [value]="lease"
+                    required
+                  />
+                  {{ lease }}
+                </label>
+              }
+            </div>
+
+            @if (!listing.lease && submitted) {
+              <small class="error">Choose a lease type.</small>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Expected rent</h2>
+
+        <div class="field-grid">
+          <div>
+            <label for="rent">Expected rent (₹) *</label>
+            <input
+              id="rent"
+              name="rent"
+              type="number"
+              [(ngModel)]="listing.rent"
+              required
+              min="1"
+              max="100000000"
+              #rentField="ngModel"
+              placeholder="Enter expected rent"
+            />
+            @if (rentField.invalid && (rentField.touched || submitted)) {
+              <small class="error">Enter a positive monthly rent.</small>
+            }
+          </div>
+
+          <div>
+            <label class="checkbox-choice">
+              <input type="checkbox" name="negotiable" [(ngModel)]="listing.negotiable" />
+              Negotiable
+            </label>
+
+            <label>Rent frequency *</label>
+            <div class="choice-group">
+              <label>
+                <input
+                  type="radio"
+                  name="priceMode"
+                  [(ngModel)]="listing.priceMode"
+                  value="Per Month"
+                  required
+                />
+                Per Month
+              </label>
+            </div>
+
+            @if (!listing.priceMode && submitted) {
+              <small class="error">Choose a rent frequency.</small>
+            }
+
+            <label class="checkbox-choice">
+              <input
+                type="checkbox"
+                name="utilitiesIncluded"
+                [(ngModel)]="listing.utilitiesIncluded"
+              />
+              Utilities included in rent
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Is the room/apartment furnished? *</h2>
+        <div class="choice-group">
+          <label>
+            <input
+              type="radio"
+              name="furnished"
+              [(ngModel)]="listing.furnished"
+              value="Yes"
+              required
+            />
+            Yes
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="furnished"
+              [(ngModel)]="listing.furnished"
+              value="No"
+              required
+            />
+            No
+          </label>
+        </div>
+        @if (!listing.furnished && submitted) {
+          <small class="error">Please select Yes or No.</small>
+        }
+      </section>
+
+      <section class="form-section">
+        <h2>Amenities included</h2>
+        <div class="amenities-grid">
+          @for (amenity of amenityOptions; track amenity) {
+            <label class="checkbox-choice">
+              <input
+                type="checkbox"
+                [checked]="listing.amenities.includes(amenity)"
+                (change)="toggleAmenity(amenity, $any($event.target).checked)"
+              />
+              {{ amenity }}
+            </label>
+          }
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Vegetarian preference *</h2>
+        <div class="choice-group">
+          @for (
+            preference of ['Vegetarian only', 'Non-vegetarian allowed', 'No preference'];
+            track preference
+          ) {
+            <label>
+              <input
+                type="radio"
+                name="vegetarianPreference"
+                [(ngModel)]="listing.vegetarianPreference"
+                [value]="preference"
+                required
+              />
+              {{ preference }}
+            </label>
+          }
+        </div>
+        @if (!listing.vegetarianPreference && submitted) {
+          <small class="error">Please select a preference.</small>
+        }
+      </section>
+
+      <section class="form-section">
+        <h2>Description</h2>
+
+        <label for="title">Listing title *</label>
+        <input
+          id="title"
+          name="title"
+          [(ngModel)]="listing.title"
+          required
+          minlength="5"
+          maxlength="100"
+          #titleField="ngModel"
+          placeholder="Enter your ad title"
+        />
+        @if (titleField.invalid && (titleField.touched || submitted)) {
+          <small class="error">Title must be between 5 and 100 characters.</small>
+        }
+
+        <label for="description">Description *</label>
+        <textarea
+          id="description"
+          name="description"
+          [(ngModel)]="listing.description"
+          required
+          minlength="20"
+          maxlength="1400"
+          rows="6"
+          #descriptionField="ngModel"
+          placeholder="Enter a detailed description within 1400 characters"
+        ></textarea>
+        <small>{{ listing.description.length }}/1400 characters</small>
+        @if (descriptionField.invalid && (descriptionField.touched || submitted)) {
+          <small class="error">Description must be between 20 and 1,400 characters.</small>
+        }
+      </section>
+
+      <div class="form-actions">
+        <a routerLink="/" class="cancel-button">Cancel</a>
+        <button type="submit">Preview listing →</button>
+      </div>
+    </form>
+  } @else {
+    <section class="form-section preview-panel">
+      <span class="eyebrow">REVIEW YOUR PROPERTY</span>
+      <h2>Preview and Submit</h2>
+      <p>Review your property details before publishing.</p>
+
+      <div class="preview-grid">
+        <div class="preview-item">
+          <span>Property type</span>
+          <strong>{{ listing.buildingType }}</strong>
+        </div>
+
+        <div class="preview-item">
+          <span>Building name</span>
+          <strong>{{ listing.buildingName }}</strong>
+        </div>
+
+        <div class="preview-item">
+          <span>Address</span>
+          <strong>{{ listing.streetAddress }}, {{ listing.city }}</strong>
+        </div>
+
+        <div class="preview-item">
+          <span>Rent</span>
+          <strong>₹{{ listing.rent }} / {{ listing.priceMode }}</strong>
+          <small>{{ listing.negotiable ? 'Negotiable' : 'Non-negotiable' }}</small>
+        </div>
+
+        <div class="preview-item">
+          <span>Bedrooms</span>
+          <strong>{{ listing.bedrooms }}</strong>
+        </div>
+
+        <div class="preview-item">
+          <span>Bathrooms</span>
+          <strong>{{ listing.bathrooms }}</strong>
+        </div>
+
+        <div class="preview-item">
+          <span>Living area</span>
+          <strong>{{ listing.area }} sq ft</strong>
+        </div>
+
+        <div class="preview-item">
+          <span>Furnishing</span>
+          <strong>{{ listing.furnished === 'Yes' ? 'Furnished' : 'Unfurnished' }}</strong>
+        </div>
+
+        <div class="preview-item">
+          <span>Lease type</span>
+          <strong>{{ listing.lease }}</strong>
+        </div>
+
+        <div class="preview-item">
+          <span>Utilities</span>
+          <strong>
+            {{ listing.utilitiesIncluded ? 'Included in rent' : 'Not included in rent' }}
+          </strong>
+        </div>
+
+        <div class="preview-item">
+          <span>Shared property</span>
+          <strong>{{ listing.isShared }}</strong>
+        </div>
+
+        <div class="preview-item">
+          <span>Vegetarian preference</span>
+          <strong>{{ listing.vegetarianPreference }}</strong>
+        </div>
+      </div>
+
+      <div class="preview-description">
+        <h3>{{ listing.title }}</h3>
+        <p>{{ listing.description }}</p>
+      </div>
+
+      <div class="preview-amenities">
+        <h3>Amenities</h3>
+        @if (listing.amenities.length > 0) {
+          <div class="amenities">
+            @for (amenity of listing.amenities; track amenity) {
+              <span class="amenity">
+                <span class="amenity-check">✓</span>
+                {{ amenity }}
+              </span>
+            }
+          </div>
+        } @else {
+          <p>No amenities selected.</p>
+        }
+      </div>
+
+      <div class="form-actions preview-actions">
+        <button type="button" class="cancel-button" (click)="editListing()">← Edit details</button>
+        <button type="button" (click)="submitListing()">Publish listing →</button>
+      </div>
+    </section>
+  }
+</main>

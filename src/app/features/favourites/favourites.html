@@ -1,0 +1,34 @@
+<main class="favourites-page">
+  <span class="eyebrow">YOUR PERSONAL COLLECTION</span>
+  <h1>Saved <em>spaces.</em></h1>
+  <p class="intro">The places you've had your eye on, all in one place.</p>
+
+  @if (savedProperties.length > 0) {
+    <div class="property-grid">
+      @for (property of savedProperties; track property.id) {
+        <article class="property-card">
+          <a class="card-image" [routerLink]="['/listings', property.id]">
+            <img [src]="imageUrl(property.image)" [alt]="property.title" />
+          </a>
+
+          <div class="card-body">
+            <h2>{{ property.title }}</h2>
+            <p>{{ property.city }}</p>
+            <strong>{{ property.price | currency: 'INR' : 'symbol' : '1.0-0' }}/month</strong>
+
+            <div class="card-actions">
+              <a [routerLink]="['/listings', property.id]">View property →</a>
+              <button type="button" (click)="removeFavourite(property.id)">Remove</button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <h2>No favourites yet</h2>
+      <p>Save a property you like, and it'll show up here.</p>
+      <a routerLink="/">Explore properties →</a>
+    </div>
+  }
+</main>

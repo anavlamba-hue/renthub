@@ -1,0 +1,272 @@
+<main>
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">
+        <span class="status-dot"></span>
+        FIND YOUR NEXT CHAPTER
+      </span>
+
+      <h1>Come home to<br />something <em>better.</em></h1>
+
+      <p>
+        Discover thoughtfully chosen spaces that fit your lifestyle, your plans, and the way you
+        want to live.
+      </p>
+
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input
+          type="search"
+          placeholder="Try Mumbai, Bengaluru, Gurugram..."
+          aria-label="Search properties by title, city or address"
+          [value]="searchText"
+          (input)="searchText = $any($event.target).value; updateFilters()"
+        />
+        <a href="#listings" class="search-button">Explore</a>
+      </div>
+
+      <div class="hero-stats">
+        <div><strong>Curated</strong><span>Spaces to love</span></div>
+        <div><strong>Simple</strong><span>Rental discovery</span></div>
+        <div><strong>Yours</strong><span>Next chapter</span></div>
+      </div>
+    </div>
+
+    <div class="featured-layout">
+      <div class="featured-image">
+        <img [src]="imageUrl(featured.image)" [alt]="featured.title" />
+        <span class="image-label">✦ HANDPICKED SPACE</span>
+
+        <div class="carousel-controls">
+          <button
+            type="button"
+            (click)="previousFeatured()"
+            aria-label="Previous featured property"
+          >
+            ←
+          </button>
+          <button type="button" (click)="nextFeatured()" aria-label="Next featured property">
+            →
+          </button>
+        </div>
+      </div>
+
+      <div class="featured-info">
+        <span class="featured-tag">FEATURED LISTING</span>
+        <h2>{{ featured.title }}</h2>
+        <p class="location">⌖ {{ featured.city }}</p>
+
+        <div class="featured-price">
+          <strong>{{ featured.price | currency: 'INR' : 'symbol' : '1.0-0' }}</strong>
+          <span>/ month</span>
+        </div>
+
+        <div class="property-meta">
+          <span>{{ featured.beds }} beds</span>
+          <span>{{ featured.baths }} baths</span>
+          <span>{{ featured.area }} sq ft</span>
+        </div>
+
+        <a class="details-button" [routerLink]="['/listings', featured.id]">
+          Discover this home <span>↗</span>
+        </a>
+
+        <div class="slide-count">
+          <span>01 / {{ allProperties.length.toString().padStart(2, '0') }}</span>
+          <span>Thoughtfully selected for you</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="listings-section" id="listings">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">YOUR NEXT PLACE</span>
+        <h2>Spaces worth <em>coming home to.</em></h2>
+        <p>Explore places that feel right from the very first look.</p>
+      </div>
+      <span class="listing-count">{{ filteredProperties.length }} spaces</span>
+    </div>
+
+    <div class="filters-panel">
+      <div class="filter-field">
+        <label for="minPrice">Minimum rent (₹/month)</label>
+        <input
+          id="minPrice"
+          type="number"
+          min="0"
+          placeholder="e.g. 15000"
+          [value]="minPrice ?? ''"
+          (input)="
+            minPrice = $any($event.target).value === '' ? null : +$any($event.target).value;
+            updateFilters()
+          "
+        />
+      </div>
+
+      <div class="filter-field">
+        <label for="maxPrice">Maximum rent (₹/month)</label>
+        <input
+          id="maxPrice"
+          type="number"
+          min="0"
+          placeholder="e.g. 50000"
+          [value]="maxPrice ?? ''"
+          (input)="
+            maxPrice = $any($event.target).value === '' ? null : +$any($event.target).value;
+            updateFilters()
+          "
+        />
+      </div>
+
+      <div class="filter-field">
+        <label for="minBeds">Bedrooms</label>
+        <select
+          id="minBeds"
+          [value]="minBeds"
+          (change)="minBeds = $any($event.target).value; updateFilters()"
+        >
+          <option value="">Any number</option>
+          <option value="1">1+ bedroom</option>
+          <option value="2">2+ bedrooms</option>
+          <option value="3">3+ bedrooms</option>
+          <option value="4">4+ bedrooms</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="amenity">Amenity</label>
+        <select
+          id="amenity"
+          [value]="selectedAmenity"
+          (change)="selectedAmenity = $any($event.target).value; updateFilters()"
+        >
+          <option value="">All amenities</option>
+          @for (amenity of availableAmenities; track amenity) {
+            <option [value]="amenity">{{ amenity }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="sortBy">Sort by</label>
+        <select
+          id="sortBy"
+          [value]="sortBy"
+          (change)="sortBy = $any($event.target).value; updateFilters()"
+        >
+          <option value="featured">Featured</option>
+          <option value="price-low">Rent: low to high</option>
+          <option value="price-high">Rent: high to low</option>
+          <option value="title">Title: A–Z</option>
+          <option value="area">Largest area</option>
+        </select>
+      </div>
+
+      <button type="button" class="clear-filters" (click)="clearFilters()">Clear filters</button>
+    </div>
+
+    <div class="results-summary" aria-live="polite">
+      Showing {{ paginatedProperties.length }} of {{ filteredProperties.length }} properties
+    </div>
+
+    <div class="property-grid">
+      @for (property of paginatedProperties; track property.id) {
+        <article class="property-card">
+          <a class="card-image" [routerLink]="['/listings', property.id]">
+            <img [src]="imageUrl(property.image)" [alt]="property.title" loading="lazy" />
+            <span class="property-tag">{{ property.tag }}</span>
+          </a>
+
+          <button
+            type="button"
+            class="heart test-heart"
+            [class.favourited]="isFavourite(property.id)"
+            [attr.aria-label]="
+              isFavourite(property.id) ? 'Remove from favourites' : 'Add to favourites'
+            "
+            [attr.aria-pressed]="isFavourite(property.id)"
+            (click)="toggleFavourite(property.id)"
+          >
+            {{ isFavourite(property.id) ? '♥' : '♡' }}
+          </button>
+
+          <div class="card-body">
+            <div class="card-title-row">
+              <h3>{{ property.title }}</h3>
+              <span class="price">
+                {{ property.price | currency: 'INR' : 'symbol' : '1.0-0' }}
+                <small>/mo</small>
+              </span>
+            </div>
+
+            <p class="location">⌖ {{ property.city }}</p>
+
+            <div class="card-divider"></div>
+
+            <div class="card-meta">
+              <span>▦ {{ property.beds }} beds</span>
+              <span>♧ {{ property.baths }} baths</span>
+              <span>↔ {{ property.area }} sq ft</span>
+            </div>
+
+            <a class="view-link" [routerLink]="['/listings', property.id]">
+              View property <span>→</span>
+            </a>
+          </div>
+        </article>
+      } @empty {
+        <div class="empty-state">
+          <h3>No spaces found just yet</h3>
+          <p>Try changing your search or filters.</p>
+          <button type="button" class="clear-filters" (click)="clearFilters()">
+            Clear all filters
+          </button>
+        </div>
+      }
+    </div>
+
+    @if (filteredProperties.length > pageSize) {
+      <nav class="pagination" aria-label="Property listing pages">
+        <button type="button" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+          Previous
+        </button>
+
+        @for (page of pageNumbers; track page) {
+          <button
+            type="button"
+            [class.active]="currentPage === page"
+            [attr.aria-current]="currentPage === page ? 'page' : null"
+            (click)="goToPage(page)"
+          >
+            {{ page }}
+          </button>
+        }
+
+        <button
+          type="button"
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+        >
+          Next
+        </button>
+      </nav>
+    }
+  </section>
+
+  <section class="bottom-cta" id="how-it-works">
+    <div>
+      <span class="eyebrow">YOUR SPACE, YOUR STORY</span>
+      <h2>Have a place to share?</h2>
+      <p>Help someone find the place they'll love calling home.</p>
+    </div>
+    <a routerLink="/create-listing">List your property ↗</a>
+  </section>
+</main>
+
+<footer class="footer">
+  <a class="footer-brand" routerLink="/">rent<span>hub</span></a>
+  <p>Find a place. Find your pace.</p>
+  <span>© 2026 RentHub</span>
+</footer>

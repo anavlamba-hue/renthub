@@ -1,0 +1,31 @@
+<header class="navbar">
+  <a class="brand" routerLink="/" aria-label="RentHub home">
+    <span class="brand-icon">R</span>
+    <span>rent<span class="brand-light">hub</span></span>
+  </a>
+
+  <nav class="nav-links">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      Explore
+    </a>
+    <a href="#how-it-works">How it works</a>
+  </nav>
+
+  <div class="nav-actions">
+    @if (authService.isLoggedIn()) {
+      <span class="login-link"> Hi, {{ authService.getCurrentUser()?.name }} </span>
+
+      <button type="button" class="post-button" (click)="logout()">Log out</button>
+
+      <a
+        class="nav-favourites"
+        routerLink="/favourites"
+        aria-label="View favourites"
+        title="My Favourites"
+        >♡</a
+      >
+    } @else {
+      <a class="login-link" routerLink="/login">Log in</a>
+    }
+  </div>
+</header>
